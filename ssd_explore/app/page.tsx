@@ -80,6 +80,7 @@ type SSD = {
 
 export default function SSDBrowser() {
     // State for filters
+    const [loading, setLoading] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
     const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
@@ -866,10 +867,10 @@ export default function SSDBrowser() {
                                     <Badge
                                         key={i}
                                         variant='secondary'
-                                        className='gap-1'>
+                                        className='gap-1 px-4 rounded-full'>
                                         {brand}
                                         <button
-                                            className='ml-1'
+                                            className='ml-1 text-lg'
                                             onClick={() =>
                                                 toggleFilter('brand', brand)
                                             }>
@@ -882,10 +883,10 @@ export default function SSDBrowser() {
                                     <Badge
                                         key={i}
                                         variant='secondary'
-                                        className='gap-1'>
+                                        className='gap-1 px-4 rounded-full'>
                                         {category}
                                         <button
-                                            className='ml-1'
+                                            className='ml-1 text-lg'
                                             onClick={() =>
                                                 toggleFilter(
                                                     'category',
@@ -901,10 +902,10 @@ export default function SSDBrowser() {
                                     <Badge
                                         key={i}
                                         variant='secondary'
-                                        className='gap-1'>
+                                        className='gap-1 px-4 rounded-full'>
                                         {capacity}
                                         <button
-                                            className='ml-1'
+                                            className='ml-1 text-lg'
                                             onClick={() =>
                                                 toggleFilter(
                                                     'capacity',
@@ -920,10 +921,10 @@ export default function SSDBrowser() {
                                     <Badge
                                         key={i}
                                         variant='secondary'
-                                        className='gap-1'>
+                                        className='gap-1 px-4 rounded-full'>
                                         {intf}
                                         <button
-                                            className='ml-1'
+                                            className='ml-1 text-lg'
                                             onClick={() =>
                                                 toggleFilter('interface', intf)
                                             }>
@@ -936,10 +937,10 @@ export default function SSDBrowser() {
                                     <Badge
                                         key={i}
                                         variant='secondary'
-                                        className='gap-1'>
+                                        className='gap-1 px-4 rounded-full'>
                                         {type} NAND
                                         <button
-                                            className='ml-1'
+                                            className='ml-1 text-lg'
                                             onClick={() =>
                                                 toggleFilter('nand_type', type)
                                             }>
@@ -955,10 +956,9 @@ export default function SSDBrowser() {
                                     selectedNandTypes.length >
                                     1 && (
                                     <Button
-                                        variant='ghost'
-                                        size='sm'
+                                        variant='ghost_destructive'
                                         onClick={resetFilters}
-                                        className='h-6 px-2'>
+                                        className='cursor-pointer'>
                                         Clear all
                                     </Button>
                                 )}
@@ -991,27 +991,34 @@ export default function SSDBrowser() {
 
                     {/* SSDs Grid View */}
                     {viewMode === 'grid' ? (
-                        <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-[repeat(auto-fill,minmax(320px,1fr))] gap-4'>
+                        <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-[repeat(auto-fill,minmax(320px,1fr))] gap-4 relative'>
+                            {loading && (
+                                <div className='h-full w-full absolute top-0 bg-foreground/10 animate-pulse py-4 flex items-center justify-center'></div>
+                            )}
                             {sortedSSDs.length > 0 ? (
                                 sortedSSDs.map((ssd, i) => (
-                                    <Card key={i} className='overflow-hidden'>
+                                    <Card key={i} className='overflow-hidden '>
                                         <CardHeader className='pb-3'>
                                             <CardTitle className='flex items-center justify-between'>
                                                 <span className='truncate'>
                                                     {ssd.model}
                                                 </span>
                                                 <Badge
-                                                    variant={
-                                                        ssd.categories?.includes(
-                                                            'High-End'
-                                                        )
-                                                            ? 'default'
-                                                            : ssd.categories?.includes(
-                                                                  'Mid-Range'
-                                                              )
-                                                            ? 'secondary'
-                                                            : 'outline'
-                                                    }>
+                                                    className={`border text-white font-semibold ${
+                                                        ssd.categories
+                                                            ?.toLowerCase()
+                                                            ?.includes(
+                                                                'high-end'
+                                                            )
+                                                            ? 'bg-purple-700'
+                                                            : ssd.categories
+                                                                  ?.toLowerCase()
+                                                                  ?.includes(
+                                                                      'mid-range'
+                                                                  )
+                                                            ? 'bg-amber-700'
+                                                            : 'bg-emerald-700'
+                                                    }`}>
                                                     {ssd.brand}
                                                 </Badge>
                                             </CardTitle>
@@ -1023,7 +1030,7 @@ export default function SSDBrowser() {
                                         <CardContent className='pb-3'>
                                             <div className='grid grid-cols-2 gap-2 text-sm'>
                                                 <div>
-                                                    <p className='text-muted-foreground'>
+                                                    <p className='text-muted-foreground text-sm font-medium tracking-wide '>
                                                         Capacities
                                                     </p>
                                                     <p className='font-medium'>
@@ -1033,7 +1040,7 @@ export default function SSDBrowser() {
                                                     </p>
                                                 </div>
                                                 <div>
-                                                    <p className='text-muted-foreground'>
+                                                    <p className='text-muted-foreground text-sm font-medium tracking-wide '>
                                                         Speed (MB/s)
                                                     </p>
                                                     <p className='font-medium'>
@@ -1049,7 +1056,7 @@ export default function SSDBrowser() {
                                                     </p>
                                                 </div>
                                                 <div>
-                                                    <p className='text-muted-foreground'>
+                                                    <p className='text-muted-foreground text-sm font-medium tracking-wide '>
                                                         NAND
                                                     </p>
                                                     <p className='font-medium'>
@@ -1057,7 +1064,7 @@ export default function SSDBrowser() {
                                                     </p>
                                                 </div>
                                                 <div>
-                                                    <p className='text-muted-foreground'>
+                                                    <p className='text-muted-foreground text-sm font-medium tracking-wide '>
                                                         DRAM
                                                     </p>
                                                     <p className='font-medium'>
