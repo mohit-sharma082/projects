@@ -56,6 +56,7 @@ import {
     ExternalLink,
 } from 'lucide-react';
 import { ssdData } from '@/lib/ssd-data';
+import { ModeToggle } from '@/components/mode-toggle';
 
 type SSD = {
     brand: string;
@@ -354,10 +355,17 @@ export default function SSDBrowser() {
 
     return (
         <div className='py-8 px-4'>
-            <h1 className='text-3xl font-bold mb-2'>SSD Explorer</h1>
-            <p className='text-muted-foreground mb-6'>
-                Find the perfect SSD for your needs.
-            </p>
+            <div className='flex items-center justify-between'>
+                <div>
+                    <h1 className='text-3xl font-bold mb-2'>SSD Explorer</h1>
+                    <p className='text-muted-foreground mb-6'>
+                        Find the perfect SSD for your needs.
+                    </p>
+                </div>
+                <div>
+                    <ModeToggle />
+                </div>
+            </div>
 
             <div className='flex flex-col lg:flex-row gap-6'>
                 {/* Sidebar Filters - Desktop */}
