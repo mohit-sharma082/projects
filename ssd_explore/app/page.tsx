@@ -353,7 +353,7 @@ export default function SSDBrowser() {
     };
 
     return (
-        <div className='container mx-auto py-8 px-2 md:px-0'>
+        <div className='py-8 px-4'>
             <h1 className='text-3xl font-bold mb-2'>SSD Explorer</h1>
             <p className='text-muted-foreground mb-6'>
                 Find the perfect SSD for your needs.
