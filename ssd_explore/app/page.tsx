@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import {
@@ -79,7 +79,10 @@ type SSD = {
     affiliate_link?: string | null;
 };
 
+//
+
 export default function SSDBrowser() {
+    const [data, setData] = useState<any>(null);
     // State for filters
     const [loading, setLoading] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
@@ -108,8 +111,9 @@ export default function SSDBrowser() {
                 ssdData
                     .map((ssd) => ssd.categories)
                     .filter(
-                        (cat): cat is string => typeof cat === 'string' && !!cat
-                    )
+                        (cat): cat is string =>
+                            typeof cat === 'string' && !!cat,
+                    ),
             ),
         ].sort();
     }, []);
@@ -123,7 +127,7 @@ export default function SSDBrowser() {
             ...new Set(
                 ssdData
                     .filter((ssd) => ssd.nand_type)
-                    .map((ssd) => ssd.nand_type)
+                    .map((ssd) => ssd.nand_type),
             ),
         ].sort();
     }, []);
@@ -162,7 +166,7 @@ export default function SSDBrowser() {
         };
 
         const capacityInGB = Math.max(
-            ...nums.map((num) => convertToGB(num, unit))
+            ...nums.map((num) => convertToGB(num, unit)),
         );
 
         switch (range) {
@@ -208,7 +212,7 @@ export default function SSDBrowser() {
             const capacityMatch =
                 selectedCapacities.length === 0 ||
                 selectedCapacities.some((range) =>
-                    matchesCapacityRange(ssd?.capacities ?? '', range)
+                    matchesCapacityRange(ssd?.capacities ?? '', range),
                 );
 
             // Interface filtering
@@ -273,35 +277,35 @@ export default function SSDBrowser() {
                 setSelectedBrands((prev) =>
                     prev.includes(value)
                         ? prev.filter((brand) => brand !== value)
-                        : [...prev, value]
+                        : [...prev, value],
                 );
                 break;
             case 'category':
                 setSelectedCategories((prev) =>
                     prev.includes(value)
                         ? prev.filter((cat) => cat !== value)
-                        : [...prev, value]
+                        : [...prev, value],
                 );
                 break;
             case 'capacity':
                 setSelectedCapacities((prev) =>
                     prev.includes(value)
                         ? prev.filter((cap) => cap !== value)
-                        : [...prev, value]
+                        : [...prev, value],
                 );
                 break;
             case 'interface':
                 setSelectedInterfaces((prev) =>
                     prev.includes(value)
                         ? prev.filter((intf) => intf !== value)
-                        : [...prev, value]
+                        : [...prev, value],
                 );
                 break;
             case 'nand_type':
                 setSelectedNandTypes((prev) =>
                     prev.includes(value)
                         ? prev.filter((nand) => nand !== value)
-                        : [...prev, value]
+                        : [...prev, value],
                 );
                 break;
         }
@@ -353,6 +357,171 @@ export default function SSDBrowser() {
         setSelectedNandTypes([]);
     };
 
+    // useEffect(() => {
+    //     const url =
+    //         'https://docs.google.com/spreadsheets/d/1B27_j9NDPU3cNlj2HKcrfpJKHkOf-Oi1DbuuQva2gT4/edit?usp=sharing';
+    //     fetch(url)
+    //         .then((response) => response.json())
+    //         .then((text) => {
+    //             setData(text);
+    //         })
+    //         .catch((error) => {
+    //             console.error('Error fetching data:', error);
+    //         });
+    // }, []);
+
+    const fetchSheetData = async () => {
+        try {
+            const sheetId = '1B27_j9NDPU3cNlj2HKcrfpJKHkOf-Oi1DbuuQva2gT4';
+            const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json`;
+
+            const res = await fetch(url);
+            const text = await res.text();
+            // The response is not a pure JSON, it has some extra characters at the beginning and end. We need to extract the JSON part.
+            console.log('Raw response text:', JSON.parse(text.substring(47).slice(0, -2))); // Log the beginning of the response to verify the format
+            console.log('Raw response text:', text); // Log the beginning of the response to verify the format
+            const json = JSON.parse(text.substring(47).slice(0, -2));
+            const rows = json.table.rows.map((row: any, i: number) => {
+                if (i < 5) console.log(row);
+                return row.c.map((cell: any) => (cell ? cell.v : ''));
+            });
+            console.log(rows);
+            return rows;
+        } catch (error) {
+            console.log('Error fetching sheet data:', error);
+            return [];
+        }
+    };
+
+    useEffect(() => {
+        fetchSheetData().then((rows) => {
+            const arr: any = [];
+            const excluded: any = [];
+            for (const row of rows) {
+                if (row[0] == '') {
+                    excluded.push(row);
+                } else {
+                    arr.push({
+                        brand: row[0],
+                        model: row[1],
+                        interface: row[2],
+                        form_factor: row[3],
+                        capacities: row[4],
+                        controller: row[5],
+                        configuration: row[6],
+                        dram: row[7],
+                        hmb: row[8],
+                        nand_brand: row[9],
+                        nand_type: row[10],
+                        layers: row[11],
+                        rw_speed: row[12],
+                        categories: row[13],
+                        notes: row[14],
+                        product_page: row[15],
+                        product_page_2: row[16],
+                        affiliate_link: row[17],
+                    });
+                }
+            }
+            setData({
+                arr,
+                excluded,
+            });
+        });
+    }, []);
+
+    const headings = [
+        'Brand',
+        'Model',
+        'Interface',
+        'Form Factor',
+        'Capacities',
+        'Controller',
+        'Configuration',
+        'DRAM',
+        'HMB',
+        'NAND Brand',
+        'NAND Type',
+        'Layers',
+        'Read/Write Speed',
+        'Categories',
+    ];
+
+    return (
+        <div className='min-h-screen bg-background text-foreground'>
+            <div className='p-4 text-xs'>
+                <table className='w-full border rounded '>
+                    <thead>
+                        <tr>
+                            {headings.map((heading, i) => (
+                                <th
+                                    key={i}
+                                    className='border-b border-l p-2 text-left'>
+                                    {heading}
+                                </th>
+                            ))}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {data?.arr?.map((row: any, i: number) => (
+                            <tr key={i} className='border-t p-2'>
+                                {row.brand && (
+                                    <>
+                                        <td className='p-2 border-r'>
+                                            {row.brand}
+                                        </td>
+                                        <td className='p-2 border-r'>
+                                            {row.model}
+                                        </td>
+                                        <td className='p-2 border-r'>
+                                            {row.interface}
+                                        </td>
+                                        <td className='p-2 border-r'>
+                                            {row.form_factor}
+                                        </td>
+                                        <td className='p-2 border-r'>
+                                            {row.capacities}
+                                        </td>
+                                        <td className='p-2 border-r'>
+                                            {row.controller}
+                                        </td>
+                                        <td className='p-2 border-r'>
+                                            {row.configuration}
+                                        </td>
+                                        <td className='p-2 border-r'>
+                                            {row.dram}
+                                        </td>
+                                        <td className='p-2 border-r'>
+                                            {row.hmb}
+                                        </td>
+                                        <td className='p-2 border-r'>
+                                            {row.nand_brand}
+                                        </td>
+                                        <td className='p-2 border-r'>
+                                            {row.nand_type}
+                                        </td>
+                                        <td className='p-2 border-r'>
+                                            {row.layers}
+                                        </td>
+                                        <td className='p-2 border-r'>
+                                            {row.rw_speed}
+                                        </td>
+                                        <td className='p-2 border-r'>
+                                            {row.categories}
+                                        </td>
+                                    </>
+                                )}
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
+            <pre className='text-sm break-all text-pretty p-4 '>
+                {JSON.stringify({ length: data?.arr?.length, data }, null, 4)}
+            </pre>
+        </div>
+    );
+
     return (
         <div className='py-8 px-4'>
             <div className='flex items-center justify-between'>
@@ -397,12 +566,12 @@ export default function SSDBrowser() {
                                                 <Checkbox
                                                     id={`brand-${brand}`}
                                                     checked={selectedBrands.includes(
-                                                        brand
+                                                        brand,
                                                     )}
                                                     onCheckedChange={() =>
                                                         toggleFilter(
                                                             'brand',
-                                                            brand
+                                                            brand,
                                                         )
                                                     }
                                                 />
@@ -431,12 +600,12 @@ export default function SSDBrowser() {
                                                 <Checkbox
                                                     id={`category-${category}`}
                                                     checked={selectedCategories.includes(
-                                                        category
+                                                        category,
                                                     )}
                                                     onCheckedChange={() =>
                                                         toggleFilter(
                                                             'category',
-                                                            category
+                                                            category,
                                                         )
                                                     }
                                                 />
@@ -465,12 +634,12 @@ export default function SSDBrowser() {
                                                 <Checkbox
                                                     id={`capacity-${range}`}
                                                     checked={selectedCapacities.includes(
-                                                        range
+                                                        range,
                                                     )}
                                                     onCheckedChange={() =>
                                                         toggleFilter(
                                                             'capacity',
-                                                            range
+                                                            range,
                                                         )
                                                     }
                                                 />
@@ -499,12 +668,12 @@ export default function SSDBrowser() {
                                                 <Checkbox
                                                     id={`interface-${intf}`}
                                                     checked={selectedInterfaces.includes(
-                                                        intf
+                                                        intf,
                                                     )}
                                                     onCheckedChange={() =>
                                                         toggleFilter(
                                                             'interface',
-                                                            intf
+                                                            intf,
                                                         )
                                                     }
                                                 />
@@ -533,12 +702,12 @@ export default function SSDBrowser() {
                                                 <Checkbox
                                                     id={`nand-${type}`}
                                                     checked={selectedNandTypes.includes(
-                                                        type ?? ''
+                                                        type ?? '',
                                                     )}
                                                     onCheckedChange={() =>
                                                         toggleFilter(
                                                             'nand_type',
-                                                            type ?? ''
+                                                            type ?? '',
                                                         )
                                                     }
                                                 />
@@ -609,12 +778,12 @@ export default function SSDBrowser() {
                                                         <Checkbox
                                                             id={`mobile-brand-${brand}`}
                                                             checked={selectedBrands.includes(
-                                                                brand
+                                                                brand,
                                                             )}
                                                             onCheckedChange={() =>
                                                                 toggleFilter(
                                                                     'brand',
-                                                                    brand
+                                                                    brand,
                                                                 )
                                                             }
                                                         />
@@ -645,12 +814,12 @@ export default function SSDBrowser() {
                                                             <Checkbox
                                                                 id={`mobile-category-${category}`}
                                                                 checked={selectedCategories.includes(
-                                                                    category
+                                                                    category,
                                                                 )}
                                                                 onCheckedChange={() =>
                                                                     toggleFilter(
                                                                         'category',
-                                                                        category
+                                                                        category,
                                                                     )
                                                                 }
                                                             />
@@ -660,7 +829,7 @@ export default function SSDBrowser() {
                                                                 {category}
                                                             </label>
                                                         </div>
-                                                    )
+                                                    ),
                                                 )}
                                             </div>
                                         </AccordionContent>
@@ -682,12 +851,12 @@ export default function SSDBrowser() {
                                                             <Checkbox
                                                                 id={`mobile-capacity-${range}`}
                                                                 checked={selectedCapacities.includes(
-                                                                    range
+                                                                    range,
                                                                 )}
                                                                 onCheckedChange={() =>
                                                                     toggleFilter(
                                                                         'capacity',
-                                                                        range
+                                                                        range,
                                                                     )
                                                                 }
                                                             />
@@ -697,7 +866,7 @@ export default function SSDBrowser() {
                                                                 {range}
                                                             </label>
                                                         </div>
-                                                    )
+                                                    ),
                                                 )}
                                             </div>
                                         </AccordionContent>
@@ -718,12 +887,12 @@ export default function SSDBrowser() {
                                                         <Checkbox
                                                             id={`mobile-interface-${intf}`}
                                                             checked={selectedInterfaces.includes(
-                                                                intf
+                                                                intf,
                                                             )}
                                                             onCheckedChange={() =>
                                                                 toggleFilter(
                                                                     'interface',
-                                                                    intf
+                                                                    intf,
                                                                 )
                                                             }
                                                         />
@@ -752,12 +921,12 @@ export default function SSDBrowser() {
                                                         <Checkbox
                                                             id={`mobile-nand-${type}`}
                                                             checked={selectedNandTypes.includes(
-                                                                type ?? ''
+                                                                type ?? '',
                                                             )}
                                                             onCheckedChange={() =>
                                                                 toggleFilter(
                                                                     'nand_type',
-                                                                    type ?? ''
+                                                                    type ?? '',
                                                                 )
                                                             }
                                                         />
@@ -824,7 +993,7 @@ export default function SSDBrowser() {
                                 variant='outline'
                                 onClick={() =>
                                     setSortDirection((prev) =>
-                                        prev === 'asc' ? 'desc' : 'asc'
+                                        prev === 'asc' ? 'desc' : 'asc',
                                     )
                                 }
                                 className='w-10 p-0'>
@@ -898,7 +1067,7 @@ export default function SSDBrowser() {
                                             onClick={() =>
                                                 toggleFilter(
                                                     'category',
-                                                    category
+                                                    category,
                                                 )
                                             }>
                                             ✕
@@ -917,7 +1086,7 @@ export default function SSDBrowser() {
                                             onClick={() =>
                                                 toggleFilter(
                                                     'capacity',
-                                                    capacity
+                                                    capacity,
                                                 )
                                             }>
                                             ✕
@@ -1016,16 +1185,16 @@ export default function SSDBrowser() {
                                                         ssd.categories
                                                             ?.toLowerCase()
                                                             ?.includes(
-                                                                'high-end'
+                                                                'high-end',
                                                             )
                                                             ? 'bg-purple-700'
                                                             : ssd.categories
-                                                                  ?.toLowerCase()
-                                                                  ?.includes(
-                                                                      'mid-range'
-                                                                  )
-                                                            ? 'bg-amber-700'
-                                                            : 'bg-emerald-700'
+                                                                    ?.toLowerCase()
+                                                                    ?.includes(
+                                                                        'mid-range',
+                                                                    )
+                                                              ? 'bg-amber-700'
+                                                              : 'bg-emerald-700'
                                                     }`}>
                                                     {ssd.brand}
                                                 </Badge>
@@ -1043,7 +1212,7 @@ export default function SSDBrowser() {
                                                     </p>
                                                     <p className='font-medium'>
                                                         {formatCapacities(
-                                                            ssd.capacities
+                                                            ssd.capacities,
                                                         )}
                                                     </p>
                                                 </div>
@@ -1054,11 +1223,11 @@ export default function SSDBrowser() {
                                                     <p className='font-medium'>
                                                         {ssd.rw_speed
                                                             ? ssd.rw_speed.split(
-                                                                  '/'
+                                                                  '/',
                                                               )[0] +
                                                               ' / ' +
                                                               ssd.rw_speed.split(
-                                                                  '/'
+                                                                  '/',
                                                               )[1]
                                                             : 'N/A'}
                                                     </p>
@@ -1091,7 +1260,7 @@ export default function SSDBrowser() {
                                                         onClick={() => {
                                                             ssd &&
                                                                 setSelectedSSD(
-                                                                    ssd as unknown as SSD
+                                                                    ssd as unknown as SSD,
                                                                 );
                                                         }}>
                                                         View Details
@@ -1366,7 +1535,7 @@ export default function SSDBrowser() {
                                                 </TableCell>
                                                 <TableCell className='hidden md:table-cell'>
                                                     {formatCapacities(
-                                                        ssd.capacities
+                                                        ssd.capacities,
                                                     )}
                                                 </TableCell>
                                                 <TableCell className='hidden md:table-cell'>
@@ -1381,7 +1550,7 @@ export default function SSDBrowser() {
                                                                 onClick={() => {
                                                                     ssd &&
                                                                         setSelectedSSD(
-                                                                            ssd as unknown as SSD
+                                                                            ssd as unknown as SSD,
                                                                         );
                                                                 }}>
                                                                 <span className='sr-only md:not-sr-only md:inline-block'>
