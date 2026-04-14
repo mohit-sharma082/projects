@@ -34,3 +34,9 @@ A real-time Docker container monitoring dashboard with live log streaming, conta
 ### Overview
 
 Docker Log Streamer is a web-based application that provides a unified interface for monitoring Docker containers. It streams container logs in real-time, displays live performance metrics (CPU, memory, network I/O), and allows quick container lifecycle management—all without needing to access the command line.
+
+
+
+## 3. Mini-Projects
+
+Collection of my early journey exercises / mini-projects, working with html and vanilla js, and learning about web development basics.
