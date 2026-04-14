@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tip Calculator</title>
+
+</head>
+<style>
+    * {
+        border-radius: 10px;
+    }
+
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #121212;
+        padding-top: 50px;
+        color: white;
+    }
+
+    h1 {
+        margin-bottom: 20px;
+    }
+
+    input {
+        padding: 10px;
+        width: 300px;
+        margin: 4px 0;
+        background-color: #efefef;
+        color: black;
+    }
+
+    button {
+        padding: 10px 20px;
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        cursor: pointer;
+    }
+
+    button:hover {
+        background-color: #45a049;
+    }
+
+    #result {
+        margin-top: 20px;
+        font-weight: bold;
+    }
+</style>
+
+<body>
+
+    <h1>Tip Calculator</h1>
+
+    <p>Bill Amount:</p>
+    <input type="number" id="bill">
+
+    <p>Tip Percentage:</p>
+    <input type="number" id="tip">
+
+    <br><br>
+
+    <button onclick="calculate()">Calculate</button>
+
+    <p id="result"></p>
+
+    <script>
+
+        function calculate() {
+
+            var bill = document.getElementById("bill").value;
+            var tip = document.getElementById("tip").value;
+
+            bill = parseFloat(bill);
+            tip = parseFloat(tip);
+
+            if (bill <= 0 || isNaN(bill)) {
+                alert("Enter valid bill");
+                return;
+            }
+
+            if (tip < 0 || isNaN(tip)) {
+                alert("Enter valid tip");
+                return;
+            }
+
+            var tipAmount = (bill * tip) / 100;
+            var total = bill + tipAmount;
+
+            document.getElementById("result").innerText =
+                "Tip: " + tipAmount + " | Total: " + total;
+        }
+
+    </script>
+
+</body>
+
+</html>

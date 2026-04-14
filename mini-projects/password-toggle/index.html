@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<style>
+    * {
+        padding: 10px;
+        border-radius: 4px;
+        background-color: #121212;
+        color: white;
+    }
+
+    input,
+    button {
+        padding: 10px;
+        background-color: #ededed;
+        color: black;
+    }
+</style>
+
+<body>
+
+    <h2>Password Toggle</h2>
+
+    <input type="password" id="pass">
+    <button onclick="toggle()">Show/Hide</button>
+
+    <script>
+        function toggle() {
+            var input = document.getElementById("pass");
+
+            if (input.type === "password") {
+                input.type = "text";
+            } else {
+                input.type = "password";
+            }
+        }
+    </script>
+
+</body>
+
+</html>

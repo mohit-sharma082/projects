@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<style>
+    * {
+        padding: 10px;
+        border-radius: 4px;
+        box-sizing: border-box;
+        background-color: #121212;
+        color: white;
+    }
+
+    button {
+        padding: 10px 30px;
+        background-color: blue;
+        color: white;
+    }
+</style>
+
+<body>
+
+    <h2>Counter</h2>
+
+    <p id="count">0</p>
+
+    <button onclick="increase()">+</button>
+    <button onclick="decrease()">-</button>
+
+    <script>
+        var count = 0;
+
+        function increase() {
+            count++;
+            document.getElementById("count").innerText = count;
+        }
+
+        function decrease() {
+            count--;
+            document.getElementById("count").innerText = count;
+        }
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+
+    <h2>Character Counter</h2>
+
+    <input type="text" id="text" oninput="countChars()">
+
+    <p id="result">0 characters</p>
+
+    <script>
+        function countChars() {
+            var text = document.getElementById("text").value;
+            document.getElementById("result").innerText = text.length + " characters";
+        }
+    </script>
+
+</body>
+
+</html>

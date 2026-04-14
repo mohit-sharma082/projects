@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+
+    <h2>Random Quote</h2>
+
+    <p id="quote">Click button</p>
+
+    <button onclick="generate()">New Quote</button>
+
+    <script>
+        var quotes = [
+            "Keep going",
+            "Never give up",
+            "Stay strong",
+            "You can do it",
+            "Believe in yourself",
+            "Success is not final, failure is not fatal: It is the courage to continue that counts.",
+            "The only way to do great work is to love what you do.",
+        ];
+
+        function generate() {
+            var random = Math.floor(Math.random() * quotes.length);
+            document.getElementById("quote").innerText = quotes[random];
+        }
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tip Calculator</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Google+Sans:ital,opsz,wght@0,17..18,400..700;1,17..18,400..700&family=Manrope:wght@200..800&display=swap"
+        rel="stylesheet">
+</head>
+<style>
+    * {
+        font-family: "Manrope", sans-serif;
+        /* font-family: "Google Sans", sans-serif; */
+        box-sizing: border-box;
+
+    }
+
+    input[type=number] {
+        -moz-appearance: textfield;
+    }
+
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+</style>
+
+<body class="bg-gray-950 text-black">
+    <div class="flex h-screen w-screen items-center justify-center">
+        <div class="min-h-[30vh] min-w-[30vw] bg-slate-200 rounded-lg p-8 flex items-center flex-col gap-4">
+            <h1 class="text-4xl font-bold">Tip Calculator</h1>
+            <div class="w-full">
+                <label class="font-medium text-sm" for="billAmount">Bill Amount</label>
+                <input type="number" name="billAmount" id="billAmount" min="0" placeholder="0.00"
+                    class="block w-full bg-gray-800/20 px-4 py-2 rounded text-base placeholder:text-gray-500 focus:outline-2 " />
+            </div>
+            <div class="w-full">
+                <label class="font-medium text-sm" for="tipPercentage">Tip Percentage</label>
+                <input type="number" name="tipPercentage" id="tipPercentage" min="0" placeholder="0.00"
+                    class="block w-full bg-gray-800/20 px-4 py-2 rounded text-base placeholder:text-gray-500 focus:outline-2 " />
+            </div>
+            <div class="w-full">
+                <button id="calculateBtn" class="px-4 py-2 cursor-pointer rounded-lg text-white bg-indigo-500">Calculate
+                    Tip</button>
+            </div>
+            <div class="w-full grid grid-cols-2 gap-4" id="result">
+
+            </div>
+        </div>
+    </div>
+    <script>
+        const getBillAmount = () => {
+            const billAmount = document.getElementById('billAmount').value;
+            return parseFloat(billAmount);
+        };
+        const getTipPercentage = () => {
+            const tipPercentage = document.getElementById('tipPercentage').value;
+            return parseFloat(tipPercentage);
+        };
+        const calculateTip = () => {
+            const billAmount = getBillAmount();
+            if (billAmount <= 0 || isNaN(billAmount)) {
+                alert('Please enter a valid bill amount');
+                return;
+            }
+            const tipPercentage = getTipPercentage();
+            if (tipPercentage < 0 || isNaN(tipPercentage)) {
+                alert('Please enter a valid tip percentage');
+                return;
+            }
+
+            const tipAmount = (billAmount * tipPercentage) / 100;
+            const totalAmount = billAmount + tipAmount;
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = `
+        <div class="p-4 bg-slate-500/40 w-full rounded">Tip Amount: <p class="text-lg font-semibold"> ${tipAmount.toFixed(2)} </p></div>
+        <div class="p-4 bg-slate-500/40 w-full rounded">Total Amount: <p class="text-lg font-semibold"> ${totalAmount.toFixed(2)} </p></div>
+    `;
+        };
+
+        document.getElementById('calculateBtn').addEventListener('click', calculateTip);
+
+    </script>
+</body>
+
+</html>
